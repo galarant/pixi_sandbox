@@ -37,6 +37,7 @@
     "gulp-sass": "~0.7.0",
     "gulp-rename": "~1.1.0",
     "angular": "~1.4.4",
-    "basscss": "~7.0.3"
+    "basscss": "~7.0.3",
+    "angular-route": "~1.4.4"
   }
 }
