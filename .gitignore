@@ -1,6 +1,5 @@
 .DS_Store
-build
+frontend/build
 Desktop.ini
-node_modules
-
-_icons.sass
+frontend/node_modules
+frontend/dist
