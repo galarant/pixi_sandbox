@@ -1,114 +1,82 @@
-/* globals require, exports */
+var gulp = require('gulp'),
+  browserify = require('browserify'),
+  watchify = require('watchify'),
+  source = require('vinyl-source-stream'),
 
-// gulp plugins
-var gulp     = require('gulp'),
-gutil        = require('gulp-util'),
-es           = require('event-stream'),
-sass         = require('gulp-sass'),
-autoprefixer = require('gulp-autoprefixer'),
-jshint       = require('gulp-jshint'),
-coffee       = require('gulp-coffee'),
-clean        = require('gulp-clean'),
-connect      = require('gulp-connect'),
-browserify   = require('gulp-browserify'),
-usemin       = require('gulp-usemin'),
-imagemin     = require('gulp-imagemin'),
-rename = require('gulp-rename');
+  sass = require('gulp-sass'),
+  ngHtml2Js = require('browserify-ng-html2js'),
 
-// Connect Task
-gulp.task('connect', connect.server({
-  root: ['./app'],
-  port: 1337,
-  livereload: true
-}));
+  concat = require('gulp-concat'),
+  queue = require('streamqueue'),
 
-// Html reload
-gulp.task('html', function () {
-  return gulp.src('./app/**/*.html')
-    .pipe(connect.reload());
-});
+  autoprefixer = require('gulp-autoprefixer'),
+  minify = require('gulp-minify-css'),
+  uglify = require('gulp-uglify'),
 
-// sass compiler task
-gulp.task('sass', function () {
-  return gulp.src('./app/**/*.scss')
-    .pipe(sass({
-      onError: function (error) {
-        gutil.log(gutil.colors.red(error));
-        gutil.beep();
-      },
-      onSuccess: function () {
-        gutil.log(gutil.colors.green('Sass styles compiled successfully.'));
-      }
-    }))
-    .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-    .pipe(gulp.dest('./dist/styles/'))
-    .pipe(connect.reload());
-});
+  logger = function (message) {
+    console.log(message.toString());
+    this.emit('end');
+  },
+  path = {
+    dest: 'static/',
+    source: 'app/',
 
-// Minify images
-gulp.task('imagemin', function () {
-  return es.concat(
-    gulp.src('./app/images/**/*.png')
-      .pipe(imagemin())
-      .pipe(gulp.dest('/dest/img')),
-    gulp.src('./app/images/**/*.jpg')
-      .pipe(imagemin())
-      .pipe(gulp.dest('/dest/img')),
-    gulp.src('./app/images/**/*.gif')
-      .pipe(imagemin())
-      .pipe(gulp.dest('/dest/img'))
-  );
-});
+    cssLibs: [
+      'node_modules/basscss/css/basscss.css',
+      'node_modules/basscss-background-images/index.css'
+    ]
+  },
+  bundle;
 
-// CoffeeScript compiler task
-gulp.task('coffee', function () {
-  return gulp.src('app/**/*.coffee')
-    .pipe(coffee({bare: true})).on('error', gutil.log)
-    .pipe(gulp.dest('dist/scripts'));
-});
 
-// Script task
-gulp.task('scripts', ['coffee'], function () {
-  return gulp.src('app/app.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(browserify({
-      paths: ['./node_modules', './app'],
-      insertGlobals: true
-    }))
-    .pipe(rename(function (path) {
-      path.basename = 'bundle';
-    }))
-    .pipe(gulp.dest('dist/scripts'))
-    .pipe(connect.reload());
+browserify = browserify(path.source + 'app.js', {
+    baseDir: path.source,
+    paths: ['./node_modules', './app']
+  })
+  .transform(ngHtml2Js({
+    extension: 'html',
+    module: 'templates'
+  }));
+
+bundle = function () {
+  return browserify.bundle().on('error', logger)
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest(path.dest));
+};
+
+gulp.task('browserify', bundle);
+
+gulp.task('styles', function () {
+  var queueOptions = {
+    objectMode: true
+  };
+
+  return queue(
+      queueOptions,
+      gulp.src(path.cssLibs),
+      gulp.src(path.source + '**/*.scss').pipe(sass().on('error', logger))
+    )
+    .pipe(concat('bundle.css'))
+    .pipe(gulp.dest(path.dest));
 });
 
 gulp.task('watch', function () {
-  gulp.watch([ 'app/**/*.scss'], ['sass']);
-  gulp.watch([ 'app' + '/**/*.js'], ['scripts']);
-  gulp.watch(['./app/**/*.html'], ['html']);
+  browserify = watchify(browserify);
+  browserify.on('update', bundle);
+  browserify.on('log', logger);
+
+  gulp.watch(path.source + '**/*.scss', ['styles']);
 });
 
-gulp.task('serve', ['connect', 'sass', 'scripts', 'watch']);
+gulp.task('dev', ['browserify', 'styles', 'watch']);
 
-gulp.task('clean', function () {
-  gutil.log('Clean task goes here...');
-});
+gulp.task('default', ['browserify', 'styles'], function () {
+  gulp.src(path.dest + 'bundle.css')
+    .pipe(autoprefixer())
+    .pipe(minify())
+    .pipe(gulp.dest(path.dest));
 
-gulp.task('usemin', function () {
-  gulp.src('./app/**/*.html')
-    .pipe(usemin())
-    .pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('clean-build', function () {
-  return gulp.src('dist/', {read: false})
-    .pipe(clean());
-});
-
-gulp.task('build', ['clean-build', 'sass', 'scripts', 'imagemin', 'usemin'], function () {
-});
-
-gulp.task('default', function () {
-  gutil.log('Default task goes here...');
+  gulp.src(path.dest + 'bundle.js')
+    .pipe(uglify())
+    .pipe(gulp.dest(path.dest));
 });

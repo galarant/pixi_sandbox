@@ -1,20 +1,21 @@
 require("angular/angular");
-require('angular-route/angular-route.js');
+require("angular-route/angular-route.js");
 
 angular.module("pixi_sandbox", [
-  'ngRoute'
+  "ngRoute"
   ])
-  .config(['$routeProvider', function($routeProvider) {
+  .config(["$routeProvider", function($routeProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: '/static/home/home.html'
+      .when("/", {
+        templateUrl: "/static/home/home.html"
       })
-      .when('/tutorial', {
-        templateUrl: '/static/tutorial/tutorial.html'
+      .when("/tutorial", {
+        templateUrl: "/static/tutorial/tutorial.html"
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: "/"
       });
   }]);
 
 require("./home/home-controller.js");
+require("./tutorial/tutorial-controller.js");

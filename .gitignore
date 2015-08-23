@@ -2,4 +2,4 @@
 frontend/build
 Desktop.ini
 frontend/node_modules
-frontend/dist
+frontend/static
