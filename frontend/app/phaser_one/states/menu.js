@@ -30,10 +30,21 @@ Menu.prototype = {
 
     //set the originating location of the group
     this.titleGroup.x = 30;
-    this.titleGroup.y = 0;
+    this.titleGroup.y = 100;
 
     //create an oscillating animation tween for the group
-    this.game.add.tween(this.titleGroup).to({y: 15}, 350, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
+    this.game.add.tween(this.titleGroup).to({y: 115}, 350, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
+
+    //add the start button with a callback
+    this.startButton = this.game.add.button(this.game.width / 2, 300, "startButton", this.startClick, this);
+    this.startButton.anchor.setTo(0.5, 0.5);
+
+  },
+
+  startClick: function() {
+    //start button click handler
+    //start the play state
+    this.game.state.start("play");
 
   },
 
