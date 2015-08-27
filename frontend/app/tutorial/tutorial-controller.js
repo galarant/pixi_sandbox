@@ -1,5 +1,3 @@
-require("pixi.js");
-
 function TutorialController() {
   var stage = new PIXI.Container(0x66FF99);
   var renderer = PIXI.autoDetectRenderer(800, 600);

@@ -12,6 +12,9 @@ angular.module("pixi_sandbox", [
       .when("/tutorial", {
         templateUrl: "/static/tutorial/tutorial.html"
       })
+      .when("/phaser_one", {
+        templateUrl: "/static/phaser_one/phaser_one.html"
+      })
       .otherwise({
         redirectTo: "/"
       });
@@ -19,3 +22,4 @@ angular.module("pixi_sandbox", [
 
 require("./home/home-controller.js");
 require("./tutorial/tutorial-controller.js");
+require("./phaser_one/ctrl.js");
