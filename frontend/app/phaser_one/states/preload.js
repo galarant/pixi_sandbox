@@ -17,6 +17,7 @@ Preload.prototype = {
     this.load.image("title", "static/phaser_one_assets/title.png");
     this.load.image("startButton", "static/phaser_one_assets/start-button.png");
     this.load.spritesheet("bird", "static/phaser_one_assets/bird.png", 34, 24, 3);
+    this.load.spritesheet("pipe", "static/phaser_one_assets/pipes.png", 54, 320, 2);
   },
 
   create: function() {
