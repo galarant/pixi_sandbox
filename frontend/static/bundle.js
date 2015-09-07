@@ -16,6 +16,9 @@ angular.module("pixi_sandbox", [
       .when("/phaser_one", {
         templateUrl: "/static/phaser_one/phaser_one.html"
       })
+      .when("/grandma", {
+        templateUrl: "/static/grandma/grandma.html"
+      })
       .otherwise({
         redirectTo: "/"
       });
@@ -24,15 +27,133 @@ angular.module("pixi_sandbox", [
 require("./home/home-controller.js");
 require("./tutorial/tutorial-controller.js");
 require("./phaser_one/ctrl.js");
+require("./grandma/ctrl.js");
 
-},{"./home/home-controller.js":2,"./phaser_one/ctrl.js":3,"./tutorial/tutorial-controller.js":12,"angular-route/angular-route.js":13,"angular/angular":14}],2:[function(require,module,exports){
+},{"./grandma/ctrl.js":2,"./home/home-controller.js":6,"./phaser_one/ctrl.js":7,"./tutorial/tutorial-controller.js":16,"angular-route/angular-route.js":17,"angular/angular":18}],2:[function(require,module,exports){
+var BootState = require("./states/boot");
+var PreloadState = require("./states/preload");
+var MenuState = require("./states/menu");
+//var PlayState = require("./states/play");
+
+function GrandmaController() {
+
+  var game = new Phaser.Game(1000, 700, Phaser.AUTO, "grandma_stage");
+
+  //define the game states
+  game.state.add("boot", BootState);
+  game.state.add("preload", PreloadState);
+  game.state.add("menu", MenuState);
+  //game.state.add("play", PlayState);
+
+  //start the game
+  game.state.start("boot");
+
+}
+
+angular.module("pixi_sandbox").controller("GrandmaController", [
+  GrandmaController
+]);
+
+},{"./states/boot":3,"./states/menu":4,"./states/preload":5}],3:[function(require,module,exports){
+function Boot() {
+}
+
+Boot.prototype = {
+  preload: function() {
+    this.load.image('preloader', 'static/phaser_one_assets/preloader.gif');
+  },
+  create: function() {
+    this.game.input.maxPointers = 1;
+    this.game.state.start('preload');
+  }
+};
+
+module.exports = Boot;
+
+},{}],4:[function(require,module,exports){
+function Menu() {}
+
+Menu.prototype = {
+
+  preload: function() {
+  },
+
+  create: function() {
+    //show the background sprite
+    this.background = this.game.add.sprite(0, 0, "background");
+    this.background.scale.setTo(2.0, 2.0);
+
+    //add the title
+    this.title = this.game.add.text(this.game.world.centerX,
+                                    this.game.world.centerY - 150,
+                                    "Super Grandma Exploder");
+    this.title.anchor.setTo(0.5);
+    this.title.font = "Courier New";
+    this.title.fontSize = 60;
+    this.title.fill = "#01DF01";
+
+    //add the start button with a callback
+
+  },
+
+  startClick: function() {
+    //start button click handler
+    //start the play state
+    //this.game.state.start("play");
+
+  },
+
+  update: function() {
+
+  }
+
+};
+
+module.exports = Menu;
+
+},{}],5:[function(require,module,exports){
+function Preload() {
+  this.asset = null;
+  this.ready = false;
+}
+
+Preload.prototype = {
+  preload: function() {
+    //show the preloader while assets are loading
+    this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+    this.asset = this.add.sprite(this.width / 2, this.height / 2, "preloader");
+    this.asset.anchor.setTo(0.5, 0.5);
+    this.load.setPreloadSprite(this.asset);
+
+    //load our assets
+    this.load.image("background", "static/images/bg_asset.png");
+  },
+
+  create: function() {
+    this.asset.cropEnabled = false;
+  },
+
+  update: function() {
+    if(!!this.ready) {
+      this.game.state.start('menu');
+    }
+  },
+
+  onLoadComplete: function() {
+    this.ready = true;
+  }
+};
+
+module.exports = Preload;
+
+},{}],6:[function(require,module,exports){
 function HomeController ($location) {}
 
 angular.module("pixi_sandbox").controller("HomeController", [
   HomeController
 ]);
 
-},{}],3:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var BootState = require("./states/boot");
 var PreloadState = require("./states/preload");
 var MenuState = require("./states/menu");
@@ -57,7 +178,7 @@ angular.module("pixi_sandbox").controller("PhaserOneController", [
   PhaserOneController
 ]);
 
-},{"./states/boot":8,"./states/menu":9,"./states/play":10,"./states/preload":11}],4:[function(require,module,exports){
+},{"./states/boot":12,"./states/menu":13,"./states/play":14,"./states/preload":15}],8:[function(require,module,exports){
 //defines a Bird Sprite prefab to be used throughout the game
 
 var Bird = function(game, x, y, frame) {
@@ -103,7 +224,7 @@ Bird.prototype.flap = function() {
 
 module.exports = Bird;
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 //defines a Ground TileSprite prefab to be used throughout the game
 
 var Ground = function(game, x, y, width, height) {
@@ -134,7 +255,7 @@ Ground.prototype.update = function() {
 
 module.exports = Ground;
 
-},{}],6:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 //defines a Pipe Sprite prefab to be used throughout the game
 
 var Pipe = function(game, x, y, frame) {
@@ -159,7 +280,7 @@ Pipe.prototype.constructor = Pipe;
 
 module.exports = Pipe;
 
-},{}],7:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 //defines a Pipe Group prefab to be used throughout the game
 var Pipe = require('./pipe');
 
@@ -214,23 +335,9 @@ PipeGroup.prototype.update = function() {
 
 module.exports = PipeGroup;
 
-},{"./pipe":6}],8:[function(require,module,exports){
-function Boot() {
-}
-
-Boot.prototype = {
-  preload: function() {
-    this.load.image('preloader', 'static/phaser_one_assets/preloader.gif');
-  },
-  create: function() {
-    this.game.input.maxPointers = 1;
-    this.game.state.start('preload');
-  }
-};
-
-module.exports = Boot;
-
-},{}],9:[function(require,module,exports){
+},{"./pipe":10}],12:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],13:[function(require,module,exports){
 function Menu() {}
 
 Menu.prototype = {
@@ -289,7 +396,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Bird = require('../prefabs/bird');
 var Ground = require('../prefabs/ground');
 var PipeGroup = require('../prefabs/pipe_group');
@@ -364,7 +471,7 @@ Play.prototype = {
 
 module.exports = Play;
 
-},{"../prefabs/bird":4,"../prefabs/ground":5,"../prefabs/pipe_group":7}],11:[function(require,module,exports){
+},{"../prefabs/bird":8,"../prefabs/ground":9,"../prefabs/pipe_group":11}],15:[function(require,module,exports){
 function Preload() {
   this.asset = null;
   this.ready = false;
@@ -404,7 +511,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],12:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 function TutorialController() {
   var stage = new PIXI.Container(0x66FF99);
   var renderer = PIXI.autoDetectRenderer(800, 600);
@@ -435,7 +542,7 @@ angular.module("pixi_sandbox").controller("TutorialController", [
   TutorialController
 ]);
 
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.4
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1429,7 +1536,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],14:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.4
  * (c) 2010-2015 Google, Inc. http://angularjs.org
