@@ -13,6 +13,7 @@ Preload.prototype = {
 
     //load our assets
     this.load.image("background", "static/images/bg_asset.png");
+    this.load.image("startButton", "static/phaser_one_assets/start-button.png");
   },
 
   create: function() {

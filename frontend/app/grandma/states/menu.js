@@ -20,18 +20,31 @@ Menu.prototype = {
     this.title.fill = "#01DF01";
 
     //add the start button with a callback
+    this.startButton = this.game.add.button(this.game.world.centerX,
+                                            this.game.world.centerY,
+                                            "startButton", this.startClick, this);
+    this.startButton.anchor.setTo(0.5, 0.5);
+  },
+
+  update: function() {
 
   },
 
   startClick: function() {
     //start button click handler
     //start the play state
-    //this.game.state.start("play");
-
+    this.startButton.alpha = 0;
+    var title_tween_size = this.game.add.tween(this.title.scale).to({x: 20, y: 20});
+    title_tween_size.timeScale = 1.5;
+    var title_tween_alpha = this.game.add.tween(this.title).to({alpha: 0});
+    title_tween_alpha.timeScale = 1.5;
+    title_tween_size.start();
+    title_tween_alpha.start();
+    this.game.time.events.add(Phaser.Timer.SECOND * 0.5, this.moveToPlay, this);
   },
 
-  update: function() {
-
+  moveToPlay: function() {
+    this.game.state.start("play");
   }
 
 };
