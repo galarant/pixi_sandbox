@@ -1,3 +1,4 @@
+require("d3");
 require("angular/angular");
 require("angular-route/angular-route.js");
 

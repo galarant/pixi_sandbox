@@ -31,7 +31,7 @@ var gulp = require('gulp'),
 
 browserify = browserify(path.source + 'app.js', {
     baseDir: path.source,
-    paths: ['./node_modules', './app']
+    paths: ['./node_modules', './vendor', './app']
   })
   .transform(ngHtml2Js({
     extension: 'html',
