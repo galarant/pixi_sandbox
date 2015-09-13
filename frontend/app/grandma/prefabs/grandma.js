@@ -41,9 +41,10 @@ Grandma.prototype.explode = function() {
     sprite.y = game.world.centerY - 200 + image.y;
 
     game.physics.arcade.enableBody(sprite);
-    sprite.body.allowGravity = false;
-    sprite.body.velocity.x = game.rnd.integerInRange(-100, 100);
-    sprite.body.velocity.y = game.rnd.integerInRange(-100, 100);
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.body.velocity.x = game.rnd.integerInRange(-300, 300);
+    sprite.body.velocity.y = game.rnd.integerInRange(-300, 300);
+    sprite.body.angularVelocity = game.rnd.integerInRange(-500, 500);
   });
 
   this.alpha = 0;

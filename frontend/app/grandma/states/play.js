@@ -9,7 +9,7 @@ Play.prototype = {
 
   create: function() {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.physics.arcade.gravity.y = 1200;
+    this.game.physics.arcade.gravity.y = 0;
 
     //show the background sprite
     this.background = this.game.add.sprite(0, 0, "background");
@@ -42,6 +42,14 @@ Play.prototype = {
   },
 
   explodeKeypress: function() {
+    blood_emitter = this.game.add.emitter(this.game.world.centerX,
+                                          this.game.world.centerY,
+                                          100);
+    blood_emitter.makeParticles("blood");
+    blood_emitter.gravity = 0;
+    blood_emitter.width = 150;
+    blood_emitter.height = 350;
+    blood_emitter.start(true, 0, null, 100, true);
     this.grandma.explode();
   },
 

@@ -1,4 +1,6 @@
 .DS_Store
 frontend/build
+frontend/static
+frontend/vendor
 Desktop.ini
 frontend/node_modules
